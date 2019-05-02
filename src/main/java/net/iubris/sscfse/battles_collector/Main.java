@@ -2,6 +2,7 @@ package net.iubris.sscfse.battles_collector;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,16 +52,6 @@ public class Main {
         
         Iterable<MediaItem> iterable = searchMediaItemSupplier.get();
         
-        /*Iterator<MediaItem> iterator = iterable.iterator();
-        int c = 0;
-        while(iterator.hasNext()) {
-            MediaItem next = iterator.next();
-            c++;
-        }
-        System.out.println("found: "+c+" photos from iterator");
-        */
-//        request.
-        
         List<GooglePhoto> googlePhotos = StreamSupport.stream(iterable.spliterator(), false)
             // MediaItem
             .map(mi -> {
@@ -72,7 +63,8 @@ public class Main {
                 MediaMetadata mediaMetadata = mi.getMediaMetadata();
                 Timestamp creationTime = mediaMetadata.getCreationTime();
                 
-                GooglePhoto googlePhoto = new GooglePhoto(id, filename, description, baseUrl, creationTime);
+                GooglePhoto googlePhoto = new GooglePhoto(id, filename, description, baseUrl, 
+                        new Date(creationTime.getSeconds()*1000));
                 
                 return googlePhoto;
             })
@@ -82,7 +74,7 @@ public class Main {
         System.out.println("found: "+ googlePhotos.size()+ " photos");
         googlePhotos.stream().forEach(gp->{
             System.out.println(i.incrementAndGet()+" "+gp.getFilename()+":: "
-                    +GooglePhoto.DATE_FORMATTER.format(gp.getCreationTime().getSeconds()*1000)
+                    +GooglePhoto.DATE_FORMATTER.format(gp.getCreationDateTime())
                     +": "+gp.getDescription());
         });
         

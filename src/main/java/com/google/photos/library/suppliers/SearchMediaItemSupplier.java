@@ -52,15 +52,17 @@ public final class SearchMediaItemSupplier implements Supplier<Iterable<MediaIte
         if (!request.isPresent()) {
             return Collections.emptyList();
         }
-        boolean again = true;
         SearchMediaItemsResponse response = client.searchMediaItemsCallable().call(request.get());
+        boolean again = true;
         while(again) {
             list.addAll(response.getMediaItemsList());
             if (response.getNextPageToken().isEmpty()) {
                 request = Optional.empty();
                 again = false;
             } else {
-                request = Optional.of(request.get().toBuilder().setPageToken(response.getNextPageToken()).build());
+                String nextPageToken = response.getNextPageToken();
+//                System.out.println("nextPageToken: "+nextPageToken);
+                request = Optional.of(request.get().toBuilder().setPageToken(nextPageToken).build());
                 response = client.searchMediaItemsCallable().call(request.get());
             }
         }
