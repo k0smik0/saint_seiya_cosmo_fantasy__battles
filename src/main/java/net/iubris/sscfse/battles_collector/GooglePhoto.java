@@ -4,8 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.google.protobuf.Timestamp;
-
 public class GooglePhoto implements Comparable<GooglePhoto> {
 
     private final String id;
