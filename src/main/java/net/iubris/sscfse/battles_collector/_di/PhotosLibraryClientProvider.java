@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector;
+package net.iubris.sscfse.battles_collector._di;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -11,6 +11,8 @@ import javax.inject.Singleton;
 
 import com.google.photos.library.factories.PhotosLibraryClientFactory;
 import com.google.photos.library.v1.PhotosLibraryClient;
+
+import net.iubris.sscfse.battles_collector.model.Config;
 
 /**
  *

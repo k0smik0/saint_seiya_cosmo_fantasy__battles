@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.iubris.sscfse.battles_collector;
+package net.iubris.sscfse.battles_collector.model;
 
 import java.util.List;
 
