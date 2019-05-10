@@ -9,9 +9,18 @@
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- <grpc-netty.version>3.6.1</grpc-netty.version> <grpc-protobuf.version>3.6.1</grpc-protobuf.version> <grpc-stub.version>3.6.1</grpc-stub.version> 
-      <protobufGeneratorPath>${project.build.directory}/generated-source/protobuf</protobufGeneratorPath> -->
+<!--
+    <grpc-netty.version>3.6.1</grpc-netty.version>
+    <grpc-protobuf.version>3.6.1</grpc-protobuf.version>
+    <grpc-stub.version>3.6.1</grpc-stub.version>
+    <protobufGeneratorPath>${project.build.directory}/generated-source/protobuf</protobufGeneratorPath>
+    -->
   </properties>
+  
+  <!-- 
+    see also:
+    https://github.com/google/java-photoslibrary/issues/9
+   -->
 
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -43,104 +52,180 @@
           <target>${java.version}</target>
         </configuration>
       </plugin>
+      <!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <configuration>
+              <exportAntProperties>true</exportAntProperties>
+              <target>
+                <condition property="tcnative.classifier"
+                           value="${os.detected.classifier}-fedora"
+                           else="${os.detected.classifier}">
+                  <isset property="os.detected.release.fedora"/>
+                </condition>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
     </plugins>
+    <extensions>
+      <!-- Use os-maven-plugin to initialize the "os.detected" properties -->
+      <!--
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.5.0.Final</version>
+      </extension>
+      -->
+    </extensions>
   </build>
   <dependencies>
-  
-    <!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
+
     <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>4.2.2</version>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>4.2.2</version>
     </dependency>
-    
-  
+
+
+    <!--  NO
     <dependency>
       <groupId>com.google.photos.library</groupId>
       <artifactId>google-photos-library-client</artifactId>
       <version>1.1.0</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
-
-    <!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client -->
+    <dependency>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client</artifactId>
+      <version>1.28.0</version>
+    </dependency>
     <dependency>
       <groupId>com.google.oauth-client</groupId>
       <artifactId>google-oauth-client</artifactId>
       <version>1.28.0</version>
+    </dependency>    
+    <dependency>
+      <groupId>com.google.oauth-client</groupId>
+      <artifactId>google-oauth-client-jetty</artifactId>
+      <version>1.28.0</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-jetty -->
-
-    <!-- https://mvnrepository.com/artifact/com.google.api/gax-grpc -->
+    
+    
+    <dependency>
+      <groupId>com.google.api</groupId>
+      <artifactId>gax</artifactId>
+      <version>1.43.0</version>
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.6.0</version>
+    </dependency>    
+    
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty</artifactId>
+      <version>1.20.0</version>
+    </dependency>   
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-tcnative-boringssl-static</artifactId>
+      <version>2.0.22.Final</version>
+    </dependency>
+    end NO -->
+    
+    
+    <!-- from: https://github.com/google/java-photoslibrary/issues/9 -->
+    <dependency>
+      <groupId>com.google.photos.library</groupId>
+      <artifactId>google-photos-library-client</artifactId>
+      <version>1.1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.google.api</groupId>
+      <artifactId>api-common</artifactId>
+      <version>1.6.0</version>
+    </dependency>
+    
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax-grpc</artifactId>
       <version>1.29.0</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.google.api/gax -->
+    
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax</artifactId>
       <version>1.29.0</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.google.api.grpc/proto-google-common-protos -->
+    
     <dependency>
       <groupId>com.google.api.grpc</groupId>
       <artifactId>proto-google-common-protos</artifactId>
       <version>1.12.0</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+    
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>3.5.1</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/io.grpc/grpc-protobuf -->
+    
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
       <version>1.10.1</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/io.grpc/grpc-stub -->
+    
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
       <version>1.10.1</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+    
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.5.5</version>
     </dependency>
-
+    
     <dependency>
       <groupId>com.google.api-client</groupId>
       <artifactId>google-api-client</artifactId>
       <version>1.24.1</version>
     </dependency>
-
+    
     <dependency>
       <groupId>com.google.oauth-client</groupId>
       <artifactId>google-oauth-client-jetty</artifactId>
       <version>1.24.1</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
+    
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
       <version>3.1</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/io.grpc/grpc-netty -->
+    
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty</artifactId>
@@ -152,13 +237,67 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/io.netty/netty-tcnative-boringssl-static -->
+    
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-tcnative-boringssl-static</artifactId>
       <version>2.0.23.Final</version>
     </dependency>
+    <!-- end from: https://github.com/google/java-photoslibrary/issues/9 -->
+    
+    
+    <!--
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-tcnative</artifactId>
+      <version>2.0.20.Final</version>
+      <classifier>${tcnative.classifier}</classifier>
+      <scope>runtime</scope>
+    </dependency>
+    -->
+    
 
+    <!-- 
+    <dependency>
+      <groupId>com.google.api</groupId>
+      <artifactId>gax-grpc</artifactId>
+      <version>1.29.0</version>
+    </dependency>
+
+    
+
+    <dependency>
+      <groupId>com.google.api.grpc</groupId>
+      <artifactId>proto-google-common-protos</artifactId>
+      <version>1.12.0</version>
+    </dependency>
+
+    
+
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>1.10.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>1.10.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+    </dependency>
+    
+-->
   </dependencies>
 </project>

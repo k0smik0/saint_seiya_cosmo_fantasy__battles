@@ -17,18 +17,27 @@ import com.google.photos.library.v1.proto.MediaItem;
 import com.google.photos.library.v1.proto.MediaMetadata;
 import com.google.protobuf.Timestamp;
 
-import net.iubris.sscfse.battles_collector._di.PhotosLibraryClientProvider;
 import net.iubris.sscfse.battles_collector._di.SSCFSEBattlesModule;
+import net.iubris.sscfse.battles_collector._di.provider.BattlesItemSearchMediaItemSupplierFactory;
+import net.iubris.sscfse.battles_collector._di.provider.PhotosLibraryClientProvider;
 import net.iubris.sscfse.battles_collector.model.GooglePhoto;
 
 public class Main {
 
 
-    private final BattlesItemSearchMediaItemSupplierProvider battlesItemSearchMediaItemSupplierProvider;
+    //    private final BattlesItemSearchMediaItemSupplierFactory battlesItemSearchMediaItemSupplierProvider;
+    //
+    //    @Inject
+    //    public Main(BattlesItemSearchMediaItemSupplierFactory battlesItemSearchMediaItemSupplierProvider) {
+    //        this.battlesItemSearchMediaItemSupplierProvider = battlesItemSearchMediaItemSupplierProvider;
+    //    }
+
+    private final BattlesItemSearchMediaItemSupplierFactory battlesItemSearchMediaItemSupplierFactory;
+
 
     @Inject
-    public Main(BattlesItemSearchMediaItemSupplierProvider battlesItemSearchMediaItemSupplierProvider) {
-        this.battlesItemSearchMediaItemSupplierProvider = battlesItemSearchMediaItemSupplierProvider;
+    public Main(BattlesItemSearchMediaItemSupplierFactory battlesItemSearchMediaItemSupplierFactory) {
+        this.battlesItemSearchMediaItemSupplierFactory = battlesItemSearchMediaItemSupplierFactory;
     }
 
     public void demoSimple() throws IOException, GeneralSecurityException {
@@ -53,7 +62,9 @@ public class Main {
         //        final SearchMediaItemsRequest request = SearchMediaItemsRequest.newBuilder().setAlbumId(album.getId()).build();
         //        final SearchMediaItemSupplier searchMediaItemSupplier = new SearchMediaItemSupplier(photosLibraryClient, request);
 
-        final Iterable<MediaItem> iterable = battlesItemSearchMediaItemSupplierProvider.get().get();
+
+
+        final Iterable<MediaItem> iterable =  battlesItemSearchMediaItemSupplierFactory.retrieve().get();
 
         final List<GooglePhoto> googlePhotos = StreamSupport.stream(iterable.spliterator(), false)
                 // MediaItem

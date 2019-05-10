@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector._di;
+package net.iubris.sscfse.battles_collector._di.provider;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -26,7 +26,9 @@ public class PhotosLibraryClientProvider implements Provider<PhotosLibraryClient
     private PhotosLibraryClient photosLibraryClient;
 
     public PhotosLibraryClientProvider init(String credentialsPath) throws IOException, GeneralSecurityException {
-        photosLibraryClient = PhotosLibraryClientFactory.createClient( credentialsPath, Config.REQUIRED_SCOPES);
+        if (photosLibraryClient==null) {
+            photosLibraryClient = PhotosLibraryClientFactory.createClient( credentialsPath, Config.REQUIRED_SCOPES);
+        }
         return this;
     }
 
