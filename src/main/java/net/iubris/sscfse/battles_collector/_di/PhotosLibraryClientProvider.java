@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector;
+package net.iubris.sscfse.battles_collector._di;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -12,6 +12,8 @@ import javax.inject.Singleton;
 import com.google.photos.library.factories.PhotosLibraryClientFactory;
 import com.google.photos.library.v1.PhotosLibraryClient;
 
+import net.iubris.sscfse.battles_collector.Config;
+
 /**
  *
  * @author massimiliano.leone - massimiliano.leone@iubris.net
@@ -21,16 +23,16 @@ import com.google.photos.library.v1.PhotosLibraryClient;
 @Singleton
 public class PhotosLibraryClientProvider implements Provider<PhotosLibraryClient> {
 
-    private PhotosLibraryClient photosLibraryClient;
+	private PhotosLibraryClient photosLibraryClient;
 
-    public PhotosLibraryClientProvider init(String credentialsPath) throws IOException, GeneralSecurityException {
-        photosLibraryClient = PhotosLibraryClientFactory.createClient( credentialsPath, Config.REQUIRED_SCOPES);
-        return this;
-    }
+	public PhotosLibraryClientProvider init(String credentialsPath) throws IOException, GeneralSecurityException {
+		photosLibraryClient = PhotosLibraryClientFactory.createClient( credentialsPath, Config.REQUIRED_SCOPES);
+		return this;
+	}
 
-    @Override
-    public PhotosLibraryClient get() {
-        return photosLibraryClient;
-    }
+	@Override
+	public PhotosLibraryClient get() {
+		return photosLibraryClient;
+	}
 
 }
