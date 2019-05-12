@@ -9,8 +9,6 @@ import com.google.photos.library.suppliers.SearchMediaItemSupplier;
 import com.google.photos.library.v1.PhotosLibraryClient;
 import com.google.photos.library.v1.proto.Album;
 
-import net.iubris.sscfse.battles_collector.BattlesAlbumProvider;
-import net.iubris.sscfse.battles_collector.BattlesAlbumSearchMediaItemSupplierProvider;
 import net.iubris.sscfse.battles_collector.Config;
 
 /**

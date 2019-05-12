@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector;
+package net.iubris.sscfse.battles_collector._di;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -10,6 +10,8 @@ import com.google.photos.library.suppliers.ListAlbumsSupplier;
 import com.google.photos.library.v1.PhotosLibraryClient;
 import com.google.photos.library.v1.proto.Album;
 import com.google.photos.library.v1.proto.ListAlbumsRequest;
+
+import net.iubris.sscfse.battles_collector.Config;
 
 /**
  * @author k0smik0 - massimiliano.leone@iubris.net
