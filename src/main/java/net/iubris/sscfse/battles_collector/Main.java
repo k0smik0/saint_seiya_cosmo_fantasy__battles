@@ -32,7 +32,7 @@ public class Main {
     // project:
     // https://console.developers.google.com/apis/credentials?project=project-id-0637669633636693062
     
-    private static final String SSCFSE_BATTLES_ALBUM_TITLE = "sscf - win/lose battles";
+    private static final String SSCFSE_BATTLES_ALBUM_TITLE = "sscfse - win/lose battles";
     
     public void demoSimple(String credentialsPath, String albumName) throws IOException, GeneralSecurityException {
 //      Credentials.
