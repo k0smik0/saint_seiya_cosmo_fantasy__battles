@@ -18,5 +18,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="output" path="target/battles_searcher-1.0.0-SNAPSHOT/WEB-INF/classes"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
