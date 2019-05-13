@@ -28,20 +28,10 @@ import net.iubris.sscfse.battles_collector.Config;
 @Singleton
 public class VisionServiceProvider extends CredentiableProvider<Vision, VisionServiceProvider> {
 
-    //    private ImageAnnotatorClient imageAnnotatorClient;
-    //    private GoogleCredentials googleCredentialsWithScope;
     private GoogleCredential credential;
 
     @Override
-    public VisionServiceProvider init(String credentialsPath) throws FileNotFoundException, IOException {
-        //        if (imageAnnotatorClient==null ) {
-        //            googleCredentialsWithScope = GoogleCredentials.fromStream(new FileInputStream(credentialsPath) ).createScoped(VisionScopes.all());
-        //            final FixedCredentialsProvider fixedCredentialsProvider = FixedCredentialsProvider.create( googleCredentialsWithScope );
-        //            final ImageAnnotatorSettings ias = ImageAnnotatorSettings.newBuilder()
-        //                    .setCredentialsProvider( fixedCredentialsProvider )
-        //                    .build();
-        //            imageAnnotatorClient = com.google.cloud.vision.v1.ImageAnnotatorClient.create(ias);
-        //        }
+    public VisionServiceProvider init() throws FileNotFoundException, IOException {
         credential = GoogleCredential.fromStream( new FileInputStream(credentialsPath) ).createScoped(VisionScopes.all());
         return this;
     }

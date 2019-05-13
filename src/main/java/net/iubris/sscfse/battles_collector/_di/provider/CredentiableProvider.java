@@ -3,8 +3,6 @@
  */
 package net.iubris.sscfse.battles_collector._di.provider;
 
-import javax.inject.Provider;
-
 /**
  * @author massimiliano.leone - massimiliano.leone@iubris.net
  *
@@ -12,8 +10,11 @@ import javax.inject.Provider;
  * @param <T>
  */
 @SuppressWarnings("rawtypes")
-public abstract class CredentiableProvider<T, eP extends CredentiableProvider> implements Provider<T> {
+public abstract class CredentiableProvider<T, eCP extends CredentiableProvider> extends InitableProvider<T, eCP> {
 
-    public abstract eP init(String credentialsPath) throws Exception;
+    protected String credentialsPath;
 
+    public void setCredentialsPath(String credentialsPath) {
+        this.credentialsPath = credentialsPath;
+    }
 }

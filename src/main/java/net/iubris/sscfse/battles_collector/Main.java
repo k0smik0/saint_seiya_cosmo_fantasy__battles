@@ -13,6 +13,7 @@ import javax.inject.Named;
 
 import com.google.api.services.vision.v1.Vision;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
+import com.google.cloud.vision.v1.BatchAnnotateImagesRequest;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Feature.Type;
 import com.google.cloud.vision.v1.Image;
@@ -58,7 +59,9 @@ public class Main {
 
         System.out.println("vision: "+vision);
 
-        List<AnnotateImageRequest> imagesTextRecognitionRequests = buildImagesTextRecognitionRequests(googlePhotos);
+        BatchAnnotateImagesRequest batchAnnotateImagesRequest = buildImagesTextRecognitionBatchRequest(googlePhotos);
+
+        asd(batchAnnotateImagesRequest);
 
 
 
@@ -96,7 +99,7 @@ public class Main {
         return googlePhotos;
     }
 
-    private List<AnnotateImageRequest> buildImagesTextRecognitionRequests(List<GooglePhoto> googlePhotos) {
+    private BatchAnnotateImagesRequest buildImagesTextRecognitionBatchRequest(List<GooglePhoto> googlePhotos) {
         List<AnnotateImageRequest> requests = googlePhotos.parallelStream()
                 .map(gp -> {
                     String gcsPath = gp.getBaseUrl();
@@ -107,7 +110,32 @@ public class Main {
                     return request;
                 })
                 .collect(Collectors.toList());
-        return requests;
+        BatchAnnotateImagesRequest batchAnnotateImagesRequest = BatchAnnotateImagesRequest.newBuilder().addAllRequests(requests).build();
+        return batchAnnotateImagesRequest;
+    }
+
+    private void asd(BatchAnnotateImagesRequest batchAnnotateImagesRequest) {
+
+        //        vision.
+
+        //        try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
+        //        BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+        //        List<AnnotateImageResponse> responses = response.getResponsesList();
+        //
+        //        for (AnnotateImageResponse res : responses) {
+        //          if (res.hasError()) {
+        //            out.printf("Error: %s\n", res.getError().getMessage());
+        //            return;
+        //          }
+        //
+        //          // For full list of available annotations, see http://g.co/cloud/vision/docs
+        //          for (EntityAnnotation annotation : res.getTextAnnotationsList()) {
+        //            out.printf("Text: %s\n", annotation.getDescription());
+        //            out.printf("Position : %s\n", annotation.getBoundingPoly());
+        //          }
+        //        }
+
+
     }
 
     private void printRetrievedGooglePhotos(List<GooglePhoto> googlePhotos) {
@@ -128,8 +156,8 @@ public class Main {
             final String serviceAccountCredentialsFile = args[1];
 
             final Injector injector = Guice.createInjector(new SSCFSEBattlesModule());
-            injector.getInstance(PhotosLibraryClientProvider.class).init(webCredentialsFile);
-            injector.getInstance(VisionServiceProvider.class).init(serviceAccountCredentialsFile);
+            injector.getInstance(PhotosLibraryClientProvider.class).setCredentialsPath(webCredentialsFile);
+            injector.getInstance(VisionServiceProvider.class).setCredentialsPath(serviceAccountCredentialsFile);
             injector.getInstance(Main.class).retrievePhotosFromAlbum();
         }
     }

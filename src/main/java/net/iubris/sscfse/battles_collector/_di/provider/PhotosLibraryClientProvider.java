@@ -25,7 +25,7 @@ public class PhotosLibraryClientProvider extends CredentiableProvider<PhotosLibr
     private PhotosLibraryClient photosLibraryClient;
 
     @Override
-    public PhotosLibraryClientProvider init(String credentialsPath) throws IOException, GeneralSecurityException {
+    public PhotosLibraryClientProvider init() throws IOException, GeneralSecurityException {
         photosLibraryClient = PhotosLibraryClientFactory.createClient( credentialsPath, Config.REQUIRED_SCOPES);
         return this;
     }
