@@ -20,19 +20,20 @@ import net.iubris.sscfse.battles_collector.Config;
  * 9 May 2019
  */
 @Singleton
-public class PhotosLibraryClientProvider extends CredentiableProvider<PhotosLibraryClient, PhotosLibraryClientProvider> {
+public class PhotosLibraryClientProvider extends AbstractCredentiableProvider<PhotosLibraryClient, PhotosLibraryClientProvider> {
 
-    private PhotosLibraryClient photosLibraryClient;
+	private PhotosLibraryClient photosLibraryClient;
 
-    @Override
-    public PhotosLibraryClientProvider init() throws IOException, GeneralSecurityException {
-        photosLibraryClient = PhotosLibraryClientFactory.createClient( credentialsPath, Config.REQUIRED_SCOPES);
-        return this;
-    }
+	@Override
+	public PhotosLibraryClientProvider init() throws IOException, GeneralSecurityException {
+		photosLibraryClient = PhotosLibraryClientFactory.createClient( credentialsPath, Config.REQUIRED_SCOPES);
+		System.out.println("created photosLibraryClient:"+photosLibraryClient);
+		return this;
+	}
 
-    @Override
-    public PhotosLibraryClient get() {
-        return photosLibraryClient;
-    }
+	@Override
+	public PhotosLibraryClient get() {
+		return photosLibraryClient;
+	}
 
 }

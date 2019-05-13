@@ -26,29 +26,28 @@ import net.iubris.sscfse.battles_collector.Config;
  * 13 May 2019
  */
 @Singleton
-public class VisionServiceProvider extends CredentiableProvider<Vision, VisionServiceProvider> {
+public class VisionServiceProvider extends AbstractCredentiableProvider<Vision, VisionServiceProvider> {
 
-    private GoogleCredential credential;
+	//	private GoogleCredential credential;
+	private Vision vision;
 
-    @Override
-    public VisionServiceProvider init() throws FileNotFoundException, IOException {
-        credential = GoogleCredential.fromStream( new FileInputStream(credentialsPath) ).createScoped(VisionScopes.all());
-        return this;
-    }
+	@Override
+	public VisionServiceProvider init() throws FileNotFoundException, IOException, GeneralSecurityException {
+		if (vision==null) {
+			GoogleCredential credential = GoogleCredential.fromStream( new FileInputStream(credentialsPath) ).createScoped(VisionScopes.all());
+			NetHttpTransport trustedTransport = GoogleNetHttpTransport.newTrustedTransport();
+			JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+			vision = new Vision.Builder(trustedTransport, jsonFactory, credential)
+					.setApplicationName(Config.APPLICATION_NAME)
+					.build();
+			System.out.println("created vision:"+vision);
+		}
+		return this;
+	}
 
-    @Override
-    public Vision get() {
-        try {
-            final NetHttpTransport trustedTransport = GoogleNetHttpTransport.newTrustedTransport();
-            final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            final Vision s = new Vision.Builder(trustedTransport, jsonFactory, credential)
-                    .setApplicationName(Config.APPLICATION_NAME)
-                    .build();
-            return s;
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	@Override
+	public Vision get() {
+		return vision;
+	}
 
 }

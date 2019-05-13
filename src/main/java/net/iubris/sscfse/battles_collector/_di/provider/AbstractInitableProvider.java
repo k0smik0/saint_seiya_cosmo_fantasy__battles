@@ -11,6 +11,6 @@ import javax.inject.Provider;
  * 13 May 2019
  */
 @SuppressWarnings("rawtypes")
-public abstract class InitableProvider<T,eICP extends InitableProvider> implements Provider<T> {
+public abstract class AbstractInitableProvider<T,eICP extends AbstractInitableProvider> implements Provider<T> {
     protected abstract eICP init() throws Exception;
 }

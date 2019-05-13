@@ -6,6 +6,7 @@ package net.iubris.sscfse.battles_collector._di.provider;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import com.google.photos.library.suppliers.SearchMediaItemSupplier;
 import com.google.photos.library.v1.PhotosLibraryClient;
@@ -19,6 +20,7 @@ import net.iubris.sscfse.battles_collector.Config;
  *
  * May 12, 2019
  */
+@Singleton
 public class BattlesAlbumSearchMediaItemSupplierProvider implements Provider<SearchMediaItemSupplier> {
 
 	private final Album battlesAlbum;

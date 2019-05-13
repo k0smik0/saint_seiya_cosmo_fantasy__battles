@@ -5,6 +5,7 @@ package net.iubris.sscfse.battles_collector._di.provider;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import com.google.photos.library.suppliers.ListAlbumsSupplier;
 import com.google.photos.library.v1.PhotosLibraryClient;
@@ -18,6 +19,7 @@ import net.iubris.sscfse.battles_collector.Config;
  *
  * May 12, 2019
  */
+@Singleton
 public class BattlesAlbumProvider implements Provider<Album> {
 
 	private final PhotosLibraryClient photosLibraryClient;
@@ -37,6 +39,7 @@ public class BattlesAlbumProvider implements Provider<Album> {
 					.parallelStream()
 					.filter(a -> a.getTitle().equalsIgnoreCase(Config.SSCFSE_BATTLES_ALBUM_TITLE))
 					.findFirst().get();
+			System.out.println("Found "+Config.SSCFSE_BATTLES_ALBUM_TITLE+": "+album.getId());
 		}
 		return album;
 	}
