@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector._di;
+package net.iubris.sscfse.battles_collector._di.provider;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
