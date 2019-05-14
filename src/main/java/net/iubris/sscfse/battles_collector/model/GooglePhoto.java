@@ -12,6 +12,8 @@ public class GooglePhoto implements Comparable<GooglePhoto> {
     private final String baseUrl;
     private final Date creationDate;
 
+    private String note;
+
     public GooglePhoto(String id, String filename, String description, String baseUrl, Date creationDate) {
         this.id = id;
         this.filename = filename;
@@ -40,15 +42,23 @@ public class GooglePhoto implements Comparable<GooglePhoto> {
         return creationDate;
     }
 
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
     @Override
     public int compareTo(GooglePhoto o) {
         return filename.compareTo(o.getFilename());
     }
-    
+
     public static final DateFormat DATE_FORMATTER = new SimpleDateFormat("yyyyMMdd_HHmmss");
     @Override
-    public String toString() {        
-//        Date date = new Date(creationTimeMillis);
+    public String toString() {
+        //        Date date = new Date(creationTimeMillis);
         String s = "[id:"+id+", filename:"+filename
                 +", description:"+description+", url:"+baseUrl
                 +", createdAt:"+DATE_FORMATTER.format(creationDate);
