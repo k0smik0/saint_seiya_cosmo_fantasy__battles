@@ -34,7 +34,6 @@ import com.google.protobuf.Timestamp;
 import net.iubris.sscfse.battles_collector._di.SSCFSEBattlesModule;
 import net.iubris.sscfse.battles_collector._di.provider.ImageAnnotatorClientProvider;
 import net.iubris.sscfse.battles_collector._di.provider.PhotosLibraryClientProvider;
-import net.iubris.sscfse.battles_collector._di.provider.VisionServiceProvider;
 import net.iubris.sscfse.battles_collector.model.GooglePhoto;
 
 public class Main {
@@ -104,8 +103,8 @@ public class Main {
 	private static final int QUOTA_MAX = 16;
 	private List<BatchAnnotateImagesRequest> buildImagesTextRecognitionBatchRequest(List<GooglePhoto> googlePhotos) {
 		Function<GooglePhoto, AnnotateImageRequest> annotateImageRequestForGooglePhoto = gp -> {
-			String gcsPath = gp.getBaseUrl();
-			ImageSource imgSource = ImageSource.newBuilder().setGcsImageUri(gcsPath).build();
+			String gpUrl = gp.getBaseUrl();
+			ImageSource imgSource = ImageSource.newBuilder().setImageUri(gpUrl).build();
 			Image img = Image.newBuilder().setSource(imgSource).build();
 			Feature feat = Feature.newBuilder().setType(Type.TEXT_DETECTION).build();
 			AnnotateImageRequest request = AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
@@ -172,7 +171,7 @@ public class Main {
 
 			final Injector injector = Guice.createInjector(new SSCFSEBattlesModule());
 			injector.getInstance(PhotosLibraryClientProvider.class).setCredentialsPath(webCredentialsFile).init();
-			injector.getInstance(VisionServiceProvider.class).setCredentialsPath(serviceAccountCredentialsFile).init();
+			//			injector.getInstance(VisionServiceProvider.class).setCredentialsPath(serviceAccountCredentialsFile).init();
 			injector.getInstance(ImageAnnotatorClientProvider.class).setCredentialsPath(serviceAccountCredentialsFile).init();
 			injector.getInstance(Main.class).retrievePhotosFromAlbum();
 		}
