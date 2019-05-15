@@ -8,4 +8,4 @@
 3. a new record containing image url, extracted info, other some knowledge will be added in a local db and putted as row onto a google spreadsheet
 4. that spreadsheet acts as data provider for a nth tab ("battles") on sscfse portal: http://www.sscfse.iubris.net
 
-Just java and a nip of bash ;)
+Just java and a pinch of bash ;)
