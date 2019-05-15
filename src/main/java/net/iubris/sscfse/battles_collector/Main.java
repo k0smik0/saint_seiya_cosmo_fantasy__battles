@@ -23,77 +23,79 @@ import net.iubris.sscfse.battles_collector.model.GooglePhoto;
 
 public class Main {
 
-	// private final PhotosLibraryClient photosLibraryClient;
-	// private final Album battlesAlbum;
-	private final SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier;
-	private final ImageAnnotatorClient imageAnnotatorClient;
-	private final SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever;
-	private final PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever;
+    // private final PhotosLibraryClient photosLibraryClient;
+    // private final Album battlesAlbum;
+    private final SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier;
+    private final ImageAnnotatorClient imageAnnotatorClient;
+    private final SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever;
+    private final PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever;
 
-	@Inject
-	public Main(
-			// PhotosLibraryClientProvider photosLibraryClientProvider
-			// @Named(Config.SSCFSE_BATTLES_ALBUM_TITLE) Album battlesAlbum,
-			@Named("BattlesAlbumSearchMediaItemSupplier") SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier,
-			ImageAnnotatorClient imageAnnotatorClient, SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever,
-			PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever) {
-		// this.battlesAlbum = battlesAlbum;
-		this.battlesAlbumSearchMediaItemSupplier = battlesAlbumSearchMediaItemSupplier;
-		this.imageAnnotatorClient = imageAnnotatorClient;
-		this.sequentiallyTextAnnotationsRetriever = sequentiallyTextAnnotationsRetriever;
-		this.paginatedBatchTextAnnotationsRetriever = paginatedBatchTextAnnotationsRetriever;
-	}
+    @Inject
+    public Main(
+            // PhotosLibraryClientProvider photosLibraryClientProvider
+            // @Named(Config.SSCFSE_BATTLES_ALBUM_TITLE) Album battlesAlbum,
+            @Named("BattlesAlbumSearchMediaItemSupplier") SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier,
+            ImageAnnotatorClient imageAnnotatorClient,
+            SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever,
+            PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever) {
+        // this.battlesAlbum = battlesAlbum;
+        this.battlesAlbumSearchMediaItemSupplier = battlesAlbumSearchMediaItemSupplier;
+        this.imageAnnotatorClient = imageAnnotatorClient;
+        this.sequentiallyTextAnnotationsRetriever = sequentiallyTextAnnotationsRetriever;
+        this.paginatedBatchTextAnnotationsRetriever = paginatedBatchTextAnnotationsRetriever;
+    }
 
-	public void retrievePhotosFromAlbum() throws IOException, GeneralSecurityException {
+    public void retrievePhotosFromAlbum() throws IOException, GeneralSecurityException {
 
-		Iterable<MediaItem> iterable = battlesAlbumSearchMediaItemSupplier.get();
+        Iterable<MediaItem> iterable = battlesAlbumSearchMediaItemSupplier.get();
 
-//		List<GooglePhoto> googlePhotosAsList = MediaItemsTransformer.retrieveMediaItemsAsList(iterable);
+        // 1
+        Table<String, String, GooglePhoto> urlOrFilenameToGooglePhotoTable = MediaItemsTransformer.mediaItemsAsTable(iterable);
+        Map<String, String> collect = sequentiallyTextAnnotationsRetriever.retrieveTextAnnotationsToFilenameToNoteMap(urlOrFilenameToGooglePhotoTable);
+        System.out.println("results:");
+        collect.forEach((k, v) -> {
+            System.out.println(k + "\n" + v + "\n");
+        });
 
-		// List<BatchAnnotateImagesRequest> batchAnnotateImagesRequests =
-		// buildImagesTextRecognitionBatchRequest(googlePhotos);
-		//
-		// retrieveTextAnnotations(batchAnnotateImagesRequests);
+        //        List<GooglePhoto> mediaItemsAsList = MediaItemsTransformer.mediaItemsAsList(iterable);
+        //        List<BatchAnnotateImagesRequest> buildImagesTextRecognitionBatchRequestsByPagination = paginatedBatchTextAnnotationsRetriever
+        //                .buildImagesTextRecognitionBatchRequestsByPagination(mediaItemsAsList);
+        //        paginatedBatchTextAnnotationsRetriever
+        //                .retrieveTextAnnotationsViaBatch(buildImagesTextRecognitionBatchRequestsByPagination);
 
-		Table<String, String, GooglePhoto> urlOrFilenameToGooglePhotoTable = MediaItemsTransformer.mediaItemsAsTable(iterable);
-		Map<String, String> collect = sequentiallyTextAnnotationsRetriever.retrieveTextAnnotationsToFilenameToNoteMap(urlOrFilenameToGooglePhotoTable);
-		System.out.println("results:");
-		collect.forEach((k, v) -> {
-			System.out.println(k + ": " + v + "\n");
-		});
+        // printRetrievedGooglePhotos(googlePhotos);
 
-		// printRetrievedGooglePhotos(googlePhotos);
+        // // Create a new Album with at title
+        // Album createdAlbum = photosLibraryClient.createAlbum("My Album");
+        //
+        // // Get some properties from the album, such as its ID and product URL
+        // String id = createdAlbum.getId();
+        // String url = createdAlbum.getProductUrl();
+    }
 
-		// // Create a new Album with at title
-		// Album createdAlbum = photosLibraryClient.createAlbum("My Album");
-		//
-		// // Get some properties from the album, such as its ID and product URL
-		// String id = createdAlbum.getId();
-		// String url = createdAlbum.getProductUrl();
-	}
+    private void printRetrievedGooglePhotos(List<GooglePhoto> googlePhotos) {
+        final AtomicInteger i = new AtomicInteger(1);
+        System.out.println("found: " + googlePhotos.size() + " photos");
+        googlePhotos.stream().forEach(gp -> {
+            System.out.println(i.incrementAndGet() + " " + gp.getFilename() + ":: "
+                    + GooglePhoto.DATE_FORMATTER.format(gp.getCreationDateTime()) + ": " + gp.getDescription());
+        });
+    }
 
-	private void printRetrievedGooglePhotos(List<GooglePhoto> googlePhotos) {
-		final AtomicInteger i = new AtomicInteger(1);
-		System.out.println("found: " + googlePhotos.size() + " photos");
-		googlePhotos.stream().forEach(gp -> {
-			System.out.println(i.incrementAndGet() + " " + gp.getFilename() + ":: " + GooglePhoto.DATE_FORMATTER.format(gp.getCreationDateTime()) + ": "
-					+ gp.getDescription());
-		});
-	}
+    public static void main(String[] args) throws IOException, GeneralSecurityException {
+        // new AlbumDemo().doStuff(args);
 
-	public static void main(String[] args) throws IOException, GeneralSecurityException {
-		// new AlbumDemo().doStuff(args);
+        if (args.length > 1) {
+            final String webCredentialsFile = args[0];
+            final String serviceAccountCredentialsFile = args[1];
 
-		if (args.length > 1) {
-			final String webCredentialsFile = args[0];
-			final String serviceAccountCredentialsFile = args[1];
-
-			final Injector injector = Guice.createInjector(new SSCFSEBattlesModule());
-			injector.getInstance(PhotosLibraryClientProvider.class).setCredentialsPath(webCredentialsFile).init();
-			// injector.getInstance(VisionServiceProvider.class).setCredentialsPath(serviceAccountCredentialsFile).init();
-			injector.getInstance(ImageAnnotatorClientProvider.class).setCredentialsPath(serviceAccountCredentialsFile).init();
-			injector.getInstance(Main.class).retrievePhotosFromAlbum();
-		}
-	}
+            final Injector injector = Guice.createInjector(new SSCFSEBattlesModule());
+            injector.getInstance(PhotosLibraryClientProvider.class).setCredentialsPath(webCredentialsFile).init();
+            // injector.getInstance(VisionServiceProvider.class).setCredentialsPath(serviceAccountCredentialsFile).init();
+            injector.getInstance(ImageAnnotatorClientProvider.class).setCredentialsPath(serviceAccountCredentialsFile)
+            .init();
+            injector.getInstance(Main.class).retrievePhotosFromAlbum();
+        }
+    }
 
 }

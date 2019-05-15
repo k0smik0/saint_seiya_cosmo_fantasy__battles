@@ -6,6 +6,8 @@ package net.iubris.sscfse.battles_collector;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,39 +30,53 @@ import net.iubris.sscfse.battles_collector.model.GooglePhoto;
 @Singleton
 public class SequentiallyTextAnnotationsRetriever extends AbstractTextAnnotationsRetriever {
 
-	@Inject
-	public SequentiallyTextAnnotationsRetriever(ImageAnnotatorClient imageAnnotatorClient) {
-		super(imageAnnotatorClient);
-	}
+    @Inject
+    public SequentiallyTextAnnotationsRetriever(ImageAnnotatorClient imageAnnotatorClient) {
+        super(imageAnnotatorClient);
+    }
 
-	public Map<String, String> retrieveTextAnnotationsToFilenameToNoteMap(Table<String, String, GooglePhoto> urlOrFilenameToGooglePhotoTable) {
-		AtomicInteger i = new AtomicInteger();
+    public Map<String, String> retrieveTextAnnotationsToFilenameToNoteMap(Table<String, String, GooglePhoto> urlOrFilenameToGooglePhotoTable) {
+        AtomicInteger i = new AtomicInteger();
 
-		System.out.println("sending request for: " + urlOrFilenameToGooglePhotoTable.values().size());
-		Map<String, String> collect = urlOrFilenameToGooglePhotoTable.cellSet().parallelStream().map(c -> {
-			GooglePhoto photo = c.getValue();
-			// System.out.println("rowKey:"+c.getRowKey()+", columnKey:"+c.getColumnKey()+",
-			// value:"+photo);
-			AnnotateImageRequest request = annotateImageRequestForGooglePhoto.apply(photo);
-			List<AnnotateImageRequest> asList = Arrays.asList(new AnnotateImageRequest[] { request });
-			System.out.println(i.incrementAndGet() + ": sending request for: " + photo.getFilename());
-			BatchAnnotateImagesResponse response = imageAnnotatorClient.batchAnnotateImages(asList);
-//                    imageAnnotatorClient.asyncBatchAnnotateFilesAsync(AsyncBatchAnnotateFilesRequest.newBuilder(). );
+        System.out.println("sending request for: " + urlOrFilenameToGooglePhotoTable.values().size());
 
-			String note = response.getResponsesList().parallelStream().flatMap(air -> {
-				Stream<String> stream = air.getTextAnnotationsList().parallelStream().map(ta -> {
-					String s = "position:" + ta.getBoundingPoly().toString().replace("\n", " ").replace("y:", ",y:").replace("   ", "") + ", description:"
-							+ ta.getDescription().replace("\n", " ");
-					return s;
-				});
-				return stream;
-			}).collect(Collectors.joining("; "));
-			System.out.println(i.get() + ": got response for: " + photo.getFilename());
+        ForkJoinPool fjp = new ForkJoinPool(16);
 
-			photo.setNote(note);
-			return photo;
-		}).collect(Collectors.toMap(GooglePhoto::getFilename, GooglePhoto::getNote));
+        Map<String, String> collect = null;
+        try {
+            collect = fjp.submit(() -> urlOrFilenameToGooglePhotoTable.cellSet().parallelStream()
+                    .map(c -> {
+                        GooglePhoto photo = c.getValue();
+                        // System.out.println("rowKey:"+c.getRowKey()+", columnKey:"+c.getColumnKey()+",
+                        // value:"+photo);
+                        AnnotateImageRequest request = annotateImageRequestForGooglePhoto.apply(photo);
+                        List<AnnotateImageRequest> asList = Arrays.asList(new AnnotateImageRequest[] { request });
+                        System.out.println(i.incrementAndGet() + ": sending request for: " + photo.getFilename());
+                        BatchAnnotateImagesResponse response = imageAnnotatorClient.batchAnnotateImages(asList);
+                        //                    imageAnnotatorClient.asyncBatchAnnotateFilesAsync(AsyncBatchAnnotateFilesRequest.newBuilder(). );
 
-		return collect;
-	}
+                        String note = response.getResponsesList().parallelStream().flatMap(air -> {
+                            Stream<String> stream = air.getTextAnnotationsList().parallelStream().map(ta -> {
+                                String s =
+                                        //					        "position:" + ta.getBoundingPoly().toString().replace("\n", " ").replace("y:", ",y:").replace("   ", "")
+                                        //					        +", "+
+                                        "\tdescription:" + ta.getDescription().replace("\n", " ");
+                                return s;
+                            });
+                            return stream;
+                        }).collect(Collectors.joining("\n"));
+                        System.out.println(i.get() + ": got response for: " + photo.getFilename());
+
+                        photo.setNote(note);
+                        return photo;
+                    })
+                    .collect(Collectors.toMap(GooglePhoto::getFilename, GooglePhoto::getNote))
+                ).get();
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return collect;
+    }
 }

@@ -5,10 +5,14 @@ package net.iubris.sscfse.battles_collector;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
@@ -27,57 +31,70 @@ import net.iubris.sscfse.battles_collector.model.GooglePhoto;
 @Singleton
 public class PaginatedBatchTextAnnotationsRetriever extends AbstractTextAnnotationsRetriever {
 
-	private static final int QUOTA_MAX = 16;
+    private static final int QUOTA_MAX = 16;
 
-	@Inject
-	public PaginatedBatchTextAnnotationsRetriever(ImageAnnotatorClient imageAnnotatorClient) {
-		super(imageAnnotatorClient);
-	}
+    @Inject
+    public PaginatedBatchTextAnnotationsRetriever(ImageAnnotatorClient imageAnnotatorClient) {
+        super(imageAnnotatorClient);
+    }
 
-	public List<BatchAnnotateImagesRequest> buildImagesTextRecognitionBatchRequestsByPagination(List<GooglePhoto> googlePhotos) {
-		// AtomicInteger i = new AtomicInteger(0);
-		List<BatchAnnotateImagesRequest> collect = Lists.partition(googlePhotos, QUOTA_MAX).stream().flatMap(l -> {
-			List<AnnotateImageRequest> annotateImageRequests = l.parallelStream().map(annotateImageRequestForGooglePhoto).collect(Collectors.toList());
-			// System.out.println(i.incrementAndGet()+ ": adding
-			// "+annotateImageRequests.size()+" requests [flatMap]");
-			BatchAnnotateImagesRequest batchAnnotateImagesRequest = BatchAnnotateImagesRequest.newBuilder().addAllRequests(annotateImageRequests).build();
-			BatchAnnotateImagesRequest[] bairs = new BatchAnnotateImagesRequest[] { batchAnnotateImagesRequest };
-			return Arrays.stream(bairs);
-		}).collect(Collectors.toList());
-		// System.out.println("batch requests [flatMap]: "+collect.size());
+    public List<BatchAnnotateImagesRequest> buildImagesTextRecognitionBatchRequestsByPagination(List<GooglePhoto> googlePhotos) {
+        AtomicInteger i = new AtomicInteger(0);
+        List<BatchAnnotateImagesRequest> collect = Lists.partition(googlePhotos, QUOTA_MAX).stream().flatMap(l -> {
+            List<AnnotateImageRequest> annotateImageRequests = l.stream().map(annotateImageRequestForGooglePhoto).collect(Collectors.toList());
 
-		return collect;
-	}
+            //            System.out.println(i.incrementAndGet() + ": adding " + annotateImageRequests.size() + " requests: "+ l.stream().map(GooglePhoto::getFilename).collect(Collectors.joining(",")));
 
-	public void retrieveTextAnnotationsViaBatch(List<BatchAnnotateImagesRequest> batchAnnotateImagesRequests) {
+            BatchAnnotateImagesRequest batchAnnotateImagesRequest = BatchAnnotateImagesRequest.newBuilder().addAllRequests(annotateImageRequests).build();
+            BatchAnnotateImagesRequest[] bairs = new BatchAnnotateImagesRequest[] { batchAnnotateImagesRequest };
+            return Arrays.stream(bairs);
+        }).collect(Collectors.toList());
+        // System.out.println("batch requests [flatMap]: "+collect.size());
 
-		batchAnnotateImagesRequests.forEach(bair -> {
+        return collect;
+    }
 
-			List<AnnotateImageRequest> requestsList = bair.getRequestsList();
-			requestsList.forEach(rl -> rl.getImage().getSource().getImageUri());
+    public void retrieveTextAnnotationsViaBatch(List<BatchAnnotateImagesRequest> batchAnnotateImagesRequests) {
 
-			BatchAnnotateImagesResponse response = imageAnnotatorClient.batchAnnotateImages(bair);
+        batchAnnotateImagesRequests.forEach(bair -> {
 
-			List<AnnotateImageResponse> responses = response.getResponsesList();
+            //            bair.getRequestsList().forEach(rl -> {
+            //                System.out.println(rl.getImage().getSource().getImageUri());
+            //            });
 
-			for (AnnotateImageResponse air : responses) {
-				if (air.hasError()) {
-					System.err.printf("Error: %s\n", air.getError().getMessage());
-					return;
-				}
+            BatchAnnotateImagesResponse response = imageAnnotatorClient.batchAnnotateImages(bair);
 
-				String uri = air.getContextOrBuilder().getUri();
-				System.out.println("image url: " + uri);
+            List<AnnotateImageResponse> responses = response.getResponsesList();
 
-				// For full list of available annotations, see http://g.co/cloud/vision/docs
-				// for (EntityAnnotation annotation : air.getTextAnnotationsList()) {
-				// System.out.printf("Text: %s\n", annotation.getDescription());
-				// System.out.printf("Position : %s\n", annotation.getBoundingPoly());
-				// }
-				System.out.println("annotations: " + air.getTextAnnotationsCount());
-				System.out.println("");
-			}
+            for (AnnotateImageResponse air : responses) {
+                if (air.hasError()) {
+                    System.err.printf("Error: %s\n", air.getError().getMessage());
+                    return;
+                }
 
-		});
-	}
+                //                String string = ReflectionToStringBuilder.toString(air, ToStringStyle.JSON_STYLE, true, true, Object.class);
+                //                System.out.println(string);
+
+                //                String uri = air.getContextOrBuilder().getUri();
+                //                System.out.println("contextOrBuilder.uri: " + uri);
+                //
+                //                System.out.println("allFields:");
+                //                air.getImagePropertiesAnnotation().getAllFields().entrySet().stream().forEach(e->{
+                //                    System.out.println(e.getKey()+":"+e.getValue());
+                //                });
+
+                // For full list of available annotations, see http://g.co/cloud/vision/docs
+                // for (EntityAnnotation annotation : air.getTextAnnotationsList()) {
+                // System.out.printf("Text: %s\n", annotation.getDescription());
+                // System.out.printf("Position : %s\n", annotation.getBoundingPoly());
+                // }
+                //                System.out.println("annotations: " + air.getTextAnnotationsCount());
+                //                System.out.println("");
+
+                System.out.println( ReflectionToStringBuilder.toString(air.getContext(), ToStringStyle.JSON_STYLE, true, true, Object.class) );
+
+            }
+
+        });
+    }
 }
