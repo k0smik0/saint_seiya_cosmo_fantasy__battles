@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.google.cloud.vision.v1.AnnotateImageRequest;
+import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.common.collect.Table;
@@ -65,9 +66,20 @@ public class SequentiallyTextAnnotationsRetriever extends AbstractTextAnnotation
                             });
                             return stream;
                         }).collect(Collectors.joining("\n"));
+                        photo.setNote(note);
+
+                        AnnotateImageResponse response0 = response.getResponses(0);
+                        String textAnnotation0 = response0.getTextAnnotations(0).getDescription().replace("\n", " ");
+//                        String labelAnnotation0 = response0.getLabelAnnotations(0).getDescription().replace("\n", " ");
+//                        String logoAnnotation0 = response0.getLogoAnnotations(0).getDescription().replace("\n", " ");
+                        String note2 = "\ttextAnnotation.description:"+textAnnotation0
+//                        		+"\tlabelAnnotation.description:"+labelAnnotation0
+//                        		+"\tlogoAnnotation.description:"+logoAnnotation0
+                        		;
+                        photo.setNote(note2);
+
                         System.out.println(i.get() + ": got response for: " + photo.getFilename());
 
-                        photo.setNote(note);
                         return photo;
                     })
                     .collect(Collectors.toMap(GooglePhoto::getFilename, GooglePhoto::getNote))

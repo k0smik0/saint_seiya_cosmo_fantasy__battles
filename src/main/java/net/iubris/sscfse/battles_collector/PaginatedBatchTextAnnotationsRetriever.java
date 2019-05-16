@@ -11,9 +11,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesRequest;
@@ -66,6 +63,8 @@ public class PaginatedBatchTextAnnotationsRetriever extends AbstractTextAnnotati
 
             List<AnnotateImageResponse> responses = response.getResponsesList();
 
+
+
             for (AnnotateImageResponse air : responses) {
                 if (air.hasError()) {
                     System.err.printf("Error: %s\n", air.getError().getMessage());
@@ -91,7 +90,7 @@ public class PaginatedBatchTextAnnotationsRetriever extends AbstractTextAnnotati
                 //                System.out.println("annotations: " + air.getTextAnnotationsCount());
                 //                System.out.println("");
 
-                System.out.println( ReflectionToStringBuilder.toString(air.getContext(), ToStringStyle.JSON_STYLE, true, true, Object.class) );
+//                System.out.println( ReflectionToStringBuilder.toString(air.getContext(), ToStringStyle.JSON_STYLE, true, true, Object.class) );
 
             }
 
