@@ -54,7 +54,7 @@ public class Main {
         Map<String, String> collect = sequentiallyTextAnnotationsRetriever.retrieveTextAnnotationsToFilenameToNoteMap(urlOrFilenameToGooglePhotoTable);
         System.out.println("results:");
         collect.forEach((k, v) -> {
-            System.out.println(k + "\n" + v + "\n");
+            System.out.println(k + "\n" + v);
         });
 
         //        List<GooglePhoto> mediaItemsAsList = MediaItemsTransformer.mediaItemsAsList(iterable);

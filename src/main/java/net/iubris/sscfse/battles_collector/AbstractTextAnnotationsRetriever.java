@@ -31,7 +31,11 @@ public class AbstractTextAnnotationsRetriever {
 		String gpUrl = gp.getBaseUrl();
 		ImageSource imgSource = ImageSource.newBuilder().setImageUri(gpUrl).build();
 		Image img = Image.newBuilder().setSource(imgSource).build();
-		Feature feat = Feature.newBuilder().setType(Type.TEXT_DETECTION).build();
+		Feature feat = Feature.newBuilder()
+		        .setType(Type.TEXT_DETECTION)
+//		        .setType(Type.LABEL_DETECTION)
+//		        .setType(Type.LOGO_DETECTION)
+		        .build();
 		AnnotateImageRequest request = AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
 		return request;
 	};
