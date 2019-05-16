@@ -93,7 +93,6 @@ public class SequentiallyTextAnnotationsRetriever extends AbstractTextAnnotation
                         AtomicInteger A2 = new AtomicInteger(0);
                         String noteOrdered = response.getResponsesList().stream()
                                 .flatMap(air->{
-
 //                                    Set<EntityAnnotation> textAnnotationsOrderedByVertex = air.getTextAnnotationsList()
 //                                            .stream()
 //                                            .collect(Collectors.toCollection(supplier));
@@ -104,11 +103,13 @@ public class SequentiallyTextAnnotationsRetriever extends AbstractTextAnnotation
                                     Collections.sort(textAnnotationsList, comparatorEntityAnnotationByBoundingPoly);
                                     return textAnnotationsList.stream();
                                 })
-                                .filter(ta->isAdmissibleDescription(ta.getDescription()))
+//                                .map(ta->{return ta.getDescription().replace("\n", " ").toLowerCase())
+                                .filter(ta->isAdmissibleDescription(ta.getDescription().replace("\n", " ") ))
                                 .map(ta->{
                                     int R2n = R2.get();
                                     int A2n = A2.incrementAndGet();
-                                    String s = "\t"+R2n+"."+A2n+": "+ "position:" + ta.getBoundingPoly().toString()
+                                    /*
+                                     String s = "\t"+R2n+"."+A2n+": "+ "position:" + ta.getBoundingPoly().toString()
                                                 .replace("\n", " ")
                                                 .replace("x: ", "x:")
                                                 .replace("y: ", ",y:")
@@ -116,8 +117,12 @@ public class SequentiallyTextAnnotationsRetriever extends AbstractTextAnnotation
                                                 .replace("  ,", ",")
                                                 .replace("   ", "")
                                             +", "+ "\tdescription:" + ta.getDescription().replace("\n", " ");
-                                    return s;
+                                     */
+                                    return "\tdescription:" + ta.getDescription().replace("\n", " ").toLowerCase();
+//                                    return s;
                                 })
+                                .collect(Collectors.toSet())
+                                .stream()
                                 .collect(Collectors.joining("\n"));
                         photo.setNote(noteOrdered);
 
@@ -158,21 +163,49 @@ public class SequentiallyTextAnnotationsRetriever extends AbstractTextAnnotation
         return collect;
     }
 
+    private static final Set<String> GOOD_WORDS_FOR_DESCRIPTION = new HashSet<>();
     private static final Set<String> NOT_GOOD_WORDS_FOR_DESCRIPTION = new HashSet<>();
     static {
         NOT_GOOD_WORDS_FOR_DESCRIPTION.addAll(Arrays.asList(
-                new String[] {"History", "Chat", "WIN", "LOSE", "Battle", "Bottle", "Replay", "(", ")",
-                        "Team", "Phase", "Replay", "League", "Lv", "Party", "List", "World", "Ranking", "Rank"})
+                new String[] {"History", "Chat", "WIN", "LOSE", "Battle", "Bottle", "Bsttle", "Replay", "(", ")",
+                        "Team", "Phase", "Replay", "League", "Lv", "Party", "List", "World", "Ranking", "Rank",
+                        "Season", "Wain", "I", "II", "ID", "Filter", "All", "Total", "Power",
+                        "opponent", "your", "return", "effect", "phase", "SP", "Start", "eset",
+                        "BR", "MR", "FR", "days", "ago"
+                })
         );
+        NOT_GOOD_WORDS_FOR_DESCRIPTION.addAll(Arrays.asList(
+        		new String[] { "wam", "totolehero","totolohero", "katyney","alcoor1984","geminisaga","otowan","germangaso",
+        				"pvmomc", "sa4ny", "archontes", "arclat","job", "ultragr", "antony75", "leone", "danyel1403"
+        		})
+		);
     }
     private boolean isAdmissibleDescription(String description) {
-        boolean anyMatch = NOT_GOOD_WORDS_FOR_DESCRIPTION.parallelStream()
-        .anyMatch(s->description.toUpperCase().contains(s.toUpperCase()));
-        if (anyMatch) {
+
+    	boolean descriptionContainsGoodWords = GOOD_WORDS_FOR_DESCRIPTION.parallelStream()
+    			.anyMatch( s->description.equalsIgnoreCase(s) );
+    	if (descriptionContainsGoodWords) {
+    		return true;
+    	}
+
+        boolean descriptionContainsAnyNotGoodWordsOrViceversa = NOT_GOOD_WORDS_FOR_DESCRIPTION.parallelStream()
+    			.anyMatch(s->
+    				description.toUpperCase().contains(s.toUpperCase())
+//    				||
+//    				s.toUpperCase().contains(description.toUpperCase())
+				);
+        if (descriptionContainsAnyNotGoodWordsOrViceversa) {
             return false;
         }
+
         // start with number
-        if (description.matches("/$[0-9]/")) { return false; }
+        if (Character.isDigit(description.charAt(0))) { return false; }
+
+        // not letter
+        if (!Character.isLetter(description.charAt(0))) { return false; }
+
+        // is not alphabetic ?
+        if (!Character.isAlphabetic(description.charAt(0))) { return false; }
 
         return true;
     }
