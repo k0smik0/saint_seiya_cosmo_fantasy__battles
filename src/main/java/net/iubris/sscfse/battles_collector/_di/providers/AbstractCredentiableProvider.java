@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector._di.provider;
+package net.iubris.sscfse.battles_collector._di.providers;
 
 /**
  * @author massimiliano.leone - massimiliano.leone@iubris.net

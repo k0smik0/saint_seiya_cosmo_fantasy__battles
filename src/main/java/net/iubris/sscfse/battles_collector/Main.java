@@ -17,9 +17,12 @@ import com.google.photos.library.suppliers.SearchMediaItemSupplier;
 import com.google.photos.library.v1.proto.MediaItem;
 
 import net.iubris.sscfse.battles_collector._di.SSCFSEBattlesModule;
-import net.iubris.sscfse.battles_collector._di.provider.ImageAnnotatorClientProvider;
-import net.iubris.sscfse.battles_collector._di.provider.PhotosLibraryClientProvider;
+import net.iubris.sscfse.battles_collector._di.providers.ImageAnnotatorClientProvider;
+import net.iubris.sscfse.battles_collector._di.providers.PhotosLibraryClientProvider;
 import net.iubris.sscfse.battles_collector.model.GooglePhoto;
+import net.iubris.sscfse.battles_collector.model.MediaItemsTransformer;
+import net.iubris.sscfse.battles_collector.services.text_annotations_retrievers.PaginatedBatchTextAnnotationsRetriever;
+import net.iubris.sscfse.battles_collector.services.text_annotations_retrievers.SequentiallyTextAnnotationsRetriever;
 
 public class Main {
 

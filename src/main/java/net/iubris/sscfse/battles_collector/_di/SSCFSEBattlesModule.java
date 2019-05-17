@@ -11,10 +11,10 @@ import com.google.photos.library.v1.PhotosLibraryClient;
 import com.google.photos.library.v1.proto.Album;
 
 import net.iubris.sscfse.battles_collector.Config;
-import net.iubris.sscfse.battles_collector._di.provider.BattlesAlbumProvider;
-import net.iubris.sscfse.battles_collector._di.provider.BattlesAlbumSearchMediaItemSupplierProvider;
-import net.iubris.sscfse.battles_collector._di.provider.ImageAnnotatorClientProvider;
-import net.iubris.sscfse.battles_collector._di.provider.PhotosLibraryClientProvider;
+import net.iubris.sscfse.battles_collector._di.providers.BattlesAlbumProvider;
+import net.iubris.sscfse.battles_collector._di.providers.BattlesAlbumSearchMediaItemSupplierProvider;
+import net.iubris.sscfse.battles_collector._di.providers.ImageAnnotatorClientProvider;
+import net.iubris.sscfse.battles_collector._di.providers.PhotosLibraryClientProvider;
 
 /**
  * @author massimiliano.leone - massimiliano.leone@iubris.net

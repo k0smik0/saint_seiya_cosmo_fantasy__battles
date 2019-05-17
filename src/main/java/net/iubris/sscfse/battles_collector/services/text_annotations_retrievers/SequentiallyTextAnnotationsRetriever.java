@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector;
+package net.iubris.sscfse.battles_collector.services.text_annotations_retrievers;
 
 import java.util.ArrayList;
 import java.util.Arrays;

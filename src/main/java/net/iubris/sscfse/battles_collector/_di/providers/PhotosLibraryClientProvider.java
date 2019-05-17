@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector._di.provider;
+package net.iubris.sscfse.battles_collector._di.providers;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;

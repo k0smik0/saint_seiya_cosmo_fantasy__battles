@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.iubris.sscfse.battles_collector;
+package net.iubris.sscfse.battles_collector.model;
 
 import java.util.Date;
 import java.util.List;
@@ -12,8 +12,6 @@ import java.util.stream.StreamSupport;
 import com.google.common.collect.Table;
 import com.google.photos.library.v1.proto.MediaItem;
 import com.meyling.guava.TableCollector;
-
-import net.iubris.sscfse.battles_collector.model.GooglePhoto;
 
 /**
  * @author massimiliano.leone@iubris.net
