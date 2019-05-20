@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.common.collect.Table;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -21,7 +20,6 @@ import net.iubris.sscfse.battles_collector._di.providers.ImageAnnotatorClientPro
 import net.iubris.sscfse.battles_collector._di.providers.PhotosLibraryClientProvider;
 import net.iubris.sscfse.battles_collector.model.GooglePhoto;
 import net.iubris.sscfse.battles_collector.model.MediaItemsTransformer;
-import net.iubris.sscfse.battles_collector.services.text_annotations_retrievers.PaginatedBatchTextAnnotationsRetriever;
 import net.iubris.sscfse.battles_collector.services.text_annotations_retrievers.SequentiallyTextAnnotationsRetriever;
 
 public class Main {
@@ -29,28 +27,31 @@ public class Main {
     // private final PhotosLibraryClient photosLibraryClient;
     // private final Album battlesAlbum;
     private final SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier;
-    private final ImageAnnotatorClient imageAnnotatorClient;
+//    private final ImageAnnotatorClient imageAnnotatorClient;
     private final SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever;
-    private final PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever;
+//    private final PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever;
 
     @Inject
     public Main(
             // PhotosLibraryClientProvider photosLibraryClientProvider
             // @Named(Config.SSCFSE_BATTLES_ALBUM_TITLE) Album battlesAlbum,
-            @Named("BattlesAlbumSearchMediaItemSupplier") SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier,
-            ImageAnnotatorClient imageAnnotatorClient,
-            SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever,
-            PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever) {
+            @Named(SSCFSEBattlesModule.BattlesAlbumSearchMediaItemSupplier) SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier,
+//            ImageAnnotatorClient imageAnnotatorClient,
+            SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever
+//            PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever
+            ) {
         // this.battlesAlbum = battlesAlbum;
         this.battlesAlbumSearchMediaItemSupplier = battlesAlbumSearchMediaItemSupplier;
-        this.imageAnnotatorClient = imageAnnotatorClient;
+//        this.imageAnnotatorClient = imageAnnotatorClient;
         this.sequentiallyTextAnnotationsRetriever = sequentiallyTextAnnotationsRetriever;
-        this.paginatedBatchTextAnnotationsRetriever = paginatedBatchTextAnnotationsRetriever;
+//        this.paginatedBatchTextAnnotationsRetriever = paginatedBatchTextAnnotationsRetriever;
     }
 
     public void retrievePhotosFromAlbum() throws IOException, GeneralSecurityException {
 
         Iterable<MediaItem> iterable = battlesAlbumSearchMediaItemSupplier.get();
+
+//        battlesAlbumSearchMediaItemSupplier.
 
         // 1
         Table<String, String, GooglePhoto> urlOrFilenameToGooglePhotoTable = MediaItemsTransformer.mediaItemsAsTable(iterable);

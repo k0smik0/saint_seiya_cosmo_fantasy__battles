@@ -4,26 +4,45 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import org.datanucleus.api.jpa.annotations.SoftDelete;
+
+@Entity
+@SoftDelete
 public class GooglePhoto implements Comparable<GooglePhoto> {
 
-    private final String id;
+	@Id
+    @GeneratedValue(strategy=GenerationType.TABLE)
+	private long id;
+
+    private final String photoId;
     private final String filename;
     private final String description;
     private final String baseUrl;
     private final Date creationDate;
 
+    private String albumId;
     private String note;
 
-    public GooglePhoto(String id, String filename, String description, String baseUrl, Date creationDate) {
-        this.id = id;
+    public GooglePhoto(String photoId, String filename, String description, String baseUrl, Date creationDate) {
+        this.photoId = photoId;
         this.filename = filename;
         this.description = description;
         this.baseUrl = baseUrl;
         this.creationDate = creationDate;
     }
 
-    public final String getId() {
-        return id;
+    public GooglePhoto(String photoId, String filename, String description, String baseUrl, Date creationDate, String albumId) {
+        this(photoId, filename, description, baseUrl, creationDate);
+        this.albumId = albumId;
+    }
+
+    public final String getPhotoId() {
+        return photoId;
     }
 
     public final String getFilename() {
@@ -50,6 +69,14 @@ public class GooglePhoto implements Comparable<GooglePhoto> {
         return note;
     }
 
+	public String getAlbumId() {
+		return albumId;
+	}
+
+	public void setAlbumId(String albumId) {
+		this.albumId = albumId;
+	}
+
     @Override
     public int compareTo(GooglePhoto o) {
         return filename.compareTo(o.getFilename());
@@ -59,7 +86,7 @@ public class GooglePhoto implements Comparable<GooglePhoto> {
     @Override
     public String toString() {
         //        Date date = new Date(creationTimeMillis);
-        String s = "[id:"+id+", filename:"+filename
+        String s = "[photoId:"+photoId+", filename:"+filename
                 +", description:"+description+", url:"+baseUrl
                 +", createdAt:"+DATE_FORMATTER.format(creationDate);
         return s;

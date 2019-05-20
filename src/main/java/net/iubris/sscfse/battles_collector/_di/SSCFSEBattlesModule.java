@@ -29,7 +29,7 @@ public class SSCFSEBattlesModule extends AbstractModule {
 
 		bind(Album.class).annotatedWith(Names.named(Config.SSCFSE_BATTLES_ALBUM_TITLE)).toProvider(BattlesAlbumProvider.class);
 
-		bind(SearchMediaItemSupplier.class).annotatedWith(Names.named("BattlesAlbumSearchMediaItemSupplier")).toProvider(BattlesAlbumSearchMediaItemSupplierProvider.class);
+		bind(SearchMediaItemSupplier.class).annotatedWith(Names.named(BattlesAlbumSearchMediaItemSupplier)).toProvider(BattlesAlbumSearchMediaItemSupplierProvider.class);
 
 		//        bind(Optional)
 		//        bind(new OptionVision.class).toProvider(VisionServiceProvider.class);
@@ -37,5 +37,7 @@ public class SSCFSEBattlesModule extends AbstractModule {
 
 		bind(ImageAnnotatorClient.class).toProvider(ImageAnnotatorClientProvider.class);
 	}
+
+	public static final String BattlesAlbumSearchMediaItemSupplier = "BattlesAlbumSearchMediaItemSupplier";
 
 }
