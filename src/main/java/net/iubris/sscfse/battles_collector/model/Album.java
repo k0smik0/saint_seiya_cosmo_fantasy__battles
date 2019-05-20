@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import org.datanucleus.api.jpa.annotations.SoftDelete;
 
@@ -27,7 +28,10 @@ public class Album {
 
 	private String albumId;
 
-	private List<String> photosIds;
+	private String name;
+
+	@OneToMany
+	private List<GooglePhoto> photos;
 
 	public long getId() {
 		return id;
@@ -37,6 +41,14 @@ public class Album {
 		this.id = id;
 	}
 
+	public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 	public String getAlbumId() {
 		return albumId;
 	}
@@ -45,11 +57,11 @@ public class Album {
 		this.albumId = albumId;
 	}
 
-	public List<String> getPhotosIds() {
-		return photosIds;
+	public List<GooglePhoto> getPhotos() {
+		return photos;
 	}
 
-	public void setPhotosIds(List<String> photosIds) {
-		this.photosIds = photosIds;
+	public void setPhotos(List<GooglePhoto> photos) {
+		this.photos = photos;
 	}
 }

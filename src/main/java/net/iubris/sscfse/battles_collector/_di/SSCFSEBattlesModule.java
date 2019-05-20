@@ -11,7 +11,7 @@ import com.google.photos.library.v1.PhotosLibraryClient;
 import com.google.photos.library.v1.proto.Album;
 
 import net.iubris.sscfse.battles_collector.Config;
-import net.iubris.sscfse.battles_collector._di.providers.BattlesAlbumProvider;
+import net.iubris.sscfse.battles_collector._di.providers.BattlesGoogleAlbumProvider;
 import net.iubris.sscfse.battles_collector._di.providers.BattlesAlbumSearchMediaItemSupplierProvider;
 import net.iubris.sscfse.battles_collector._di.providers.ImageAnnotatorClientProvider;
 import net.iubris.sscfse.battles_collector._di.providers.PhotosLibraryClientProvider;
@@ -27,7 +27,7 @@ public class SSCFSEBattlesModule extends AbstractModule {
 	public void configure() {
 		bind(PhotosLibraryClient.class).toProvider(PhotosLibraryClientProvider.class);
 
-		bind(Album.class).annotatedWith(Names.named(Config.SSCFSE_BATTLES_ALBUM_TITLE)).toProvider(BattlesAlbumProvider.class);
+		bind(Album.class).annotatedWith(Names.named(Config.SSCFSE_BATTLES_ALBUM_TITLE)).toProvider(BattlesGoogleAlbumProvider.class);
 
 		bind(SearchMediaItemSupplier.class).annotatedWith(Names.named(BattlesAlbumSearchMediaItemSupplier)).toProvider(BattlesAlbumSearchMediaItemSupplierProvider.class);
 

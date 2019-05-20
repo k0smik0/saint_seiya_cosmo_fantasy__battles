@@ -3,45 +3,43 @@
  */
 package net.iubris.sscfse.battles_collector._di.providers;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import java.util.List;
 
-import com.google.photos.library.suppliers.ListAlbumsSupplier;
-import com.google.photos.library.v1.PhotosLibraryClient;
-import com.google.photos.library.v1.proto.Album;
-import com.google.photos.library.v1.proto.ListAlbumsRequest;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import net.iubris.sscfse.battles_collector.Config;
+import net.iubris.sscfse.battles_collector.model.Album;
 
 /**
- * @author k0smik0 - massimiliano.leone@iubris.net
+ * @author massimiliano.leone@iubris.net
  *
- * May 12, 2019
+ * 20 May 2019
  */
-@Singleton
 public class BattlesAlbumProvider implements Provider<Album> {
 
-	private final PhotosLibraryClient photosLibraryClient;
-	private Album album;
+    private EntityManager entityManager;
 
-	@Inject
-	public BattlesAlbumProvider(PhotosLibraryClient photosLibraryClient) {
-		this.photosLibraryClient = photosLibraryClient;
-	}
+    private BattlesAlbumProvider(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
-	@Override
-	public Album get() {
-		if (album==null) {
-			final ListAlbumsRequest listAlbumsRequest = ListAlbumsRequest.getDefaultInstance();
-			final ListAlbumsSupplier listAlbumsSupplier = new ListAlbumsSupplier(photosLibraryClient, listAlbumsRequest);
-			album = listAlbumsSupplier.get()
-					.parallelStream()
-					.filter(a -> a.getTitle().equalsIgnoreCase(Config.SSCFSE_BATTLES_ALBUM_TITLE))
-					.findFirst().get();
-			System.out.println("Found "+Config.SSCFSE_BATTLES_ALBUM_TITLE+": "+album.getId());
-		}
-		return album;
-	}
+    private Query createQuery() {
+        Query q = entityManager.createQuery("SELECT a FROM Album a WHERE a.name = :threshold", Album.class);
+        q.setParameter("name", Config.SSCFSE_BATTLES_ALBUM_TITLE);
+        return q;
+    }
+
+    @Override
+    public Album get() {
+        @SuppressWarnings("unchecked")
+        List<Album> resultList = createQuery().getResultList();
+        if (resultList!=null && resultList.size()>0) {
+            return resultList.get(0);
+        }
+
+        return null;
+    }
 
 }
