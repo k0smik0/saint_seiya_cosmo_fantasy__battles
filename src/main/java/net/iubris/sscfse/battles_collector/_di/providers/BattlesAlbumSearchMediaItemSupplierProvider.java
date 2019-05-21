@@ -5,13 +5,10 @@ package net.iubris.sscfse.battles_collector._di.providers;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import com.google.photos.library.suppliers.SearchMediaItemSupplier;
 import com.google.photos.library.v1.PhotosLibraryClient;
 import com.google.photos.library.v1.proto.Album;
-import com.google.photos.library.v1.proto.SearchMediaItemsRequest;
 
 import net.iubris.sscfse.battles_collector.Config;
 
@@ -21,22 +18,9 @@ import net.iubris.sscfse.battles_collector.Config;
  * May 12, 2019
  */
 @Singleton
-public class BattlesAlbumSearchMediaItemSupplierProvider implements Provider<SearchMediaItemSupplier> {
-
-	private final Album battlesAlbum;
-	private final PhotosLibraryClient photosLibraryClient;
-
+public class BattlesAlbumSearchMediaItemSupplierProvider extends AlbumSearchMediaItemSupplierProvider {
 	@Inject
 	public BattlesAlbumSearchMediaItemSupplierProvider(@Named(Config.SSCFSE_BATTLES_ALBUM_TITLE) Album battlesAlbum, PhotosLibraryClient photosLibraryClient) {
-		this.battlesAlbum = battlesAlbum;
-		this.photosLibraryClient = photosLibraryClient;
+		super(battlesAlbum, photosLibraryClient);
 	}
-
-	@Override
-	public SearchMediaItemSupplier get() {
-		final SearchMediaItemsRequest request = SearchMediaItemsRequest.newBuilder().setAlbumId(battlesAlbum.getId()).build();
-		final SearchMediaItemSupplier searchMediaItemSupplier = new SearchMediaItemSupplier(photosLibraryClient, request);
-		return searchMediaItemSupplier;
-	}
-
 }

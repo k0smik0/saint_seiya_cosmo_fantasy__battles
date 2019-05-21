@@ -7,12 +7,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import com.google.common.collect.Table;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.photos.library.suppliers.SearchMediaItemSupplier;
 import com.google.photos.library.v1.proto.MediaItem;
 
 import net.iubris.sscfse.battles_collector._di.SSCFSEBattlesModule;
@@ -20,39 +18,30 @@ import net.iubris.sscfse.battles_collector._di.providers.ImageAnnotatorClientPro
 import net.iubris.sscfse.battles_collector._di.providers.PhotosLibraryClientProvider;
 import net.iubris.sscfse.battles_collector.model.GooglePhoto;
 import net.iubris.sscfse.battles_collector.model.MediaItemsTransformer;
+import net.iubris.sscfse.battles_collector.services.GooglePhotoRemoteRetriever;
 import net.iubris.sscfse.battles_collector.services.text_annotations_retrievers.SequentiallyTextAnnotationsRetriever;
 
 public class Main {
 
-    // private final PhotosLibraryClient photosLibraryClient;
-    // private final Album battlesAlbum;
-    private final SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier;
-//    private final ImageAnnotatorClient imageAnnotatorClient;
+//    private final SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier;
     private final SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever;
-//    private final PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever;
+	private final GooglePhotoRemoteRetriever googlePhotoRemoteRetriever;
 
     @Inject
     public Main(
-            // PhotosLibraryClientProvider photosLibraryClientProvider
-            // @Named(Config.SSCFSE_BATTLES_ALBUM_TITLE) Album battlesAlbum,
-            @Named(SSCFSEBattlesModule.BattlesAlbumSearchMediaItemSupplier) SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier,
-//            ImageAnnotatorClient imageAnnotatorClient,
-            SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever
-//            PaginatedBatchTextAnnotationsRetriever paginatedBatchTextAnnotationsRetriever
-            ) {
-        // this.battlesAlbum = battlesAlbum;
-        this.battlesAlbumSearchMediaItemSupplier = battlesAlbumSearchMediaItemSupplier;
-//        this.imageAnnotatorClient = imageAnnotatorClient;
+//            @Named(SSCFSEBattlesModule.BattlesAlbumSearchMediaItemSupplier) SearchMediaItemSupplier battlesAlbumSearchMediaItemSupplier,
+            GooglePhotoRemoteRetriever googlePhotoRemoteRetriever,
+            SequentiallyTextAnnotationsRetriever sequentiallyTextAnnotationsRetriever) {
+        this.googlePhotoRemoteRetriever = googlePhotoRemoteRetriever;
+//		this.battlesAlbumSearchMediaItemSupplier = battlesAlbumSearchMediaItemSupplier;
         this.sequentiallyTextAnnotationsRetriever = sequentiallyTextAnnotationsRetriever;
-//        this.paginatedBatchTextAnnotationsRetriever = paginatedBatchTextAnnotationsRetriever;
     }
 
     public void retrievePhotosFromAlbum() throws IOException, GeneralSecurityException {
-
-        Iterable<MediaItem> iterable = battlesAlbumSearchMediaItemSupplier.get();
-
+        Iterable<MediaItem> iterable =
+//        		battlesAlbumSearchMediaItemSupplier.get();
+        		googlePhotoRemoteRetriever.retrieve();
 //        battlesAlbumSearchMediaItemSupplier.
-
         // 1
         Table<String, String, GooglePhoto> urlOrFilenameToGooglePhotoTable = MediaItemsTransformer.mediaItemsAsTable(iterable);
         Map<String, String> collect = sequentiallyTextAnnotationsRetriever.retrieveTextAnnotationsToFilenameToNoteMap(urlOrFilenameToGooglePhotoTable);
@@ -96,8 +85,7 @@ public class Main {
             final Injector injector = Guice.createInjector(new SSCFSEBattlesModule());
             injector.getInstance(PhotosLibraryClientProvider.class).setCredentialsPath(webCredentialsFile).init();
             // injector.getInstance(VisionServiceProvider.class).setCredentialsPath(serviceAccountCredentialsFile).init();
-            injector.getInstance(ImageAnnotatorClientProvider.class).setCredentialsPath(serviceAccountCredentialsFile)
-            .init();
+            injector.getInstance(ImageAnnotatorClientProvider.class).setCredentialsPath(serviceAccountCredentialsFile).init();
             injector.getInstance(Main.class).retrievePhotosFromAlbum();
         }
     }

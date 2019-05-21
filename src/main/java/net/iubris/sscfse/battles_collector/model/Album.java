@@ -5,6 +5,7 @@ package net.iubris.sscfse.battles_collector.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,7 +31,7 @@ public class Album {
 
 	private String name;
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "albumId")
 	private List<GooglePhoto> photos;
 
 	public long getId() {

@@ -3,13 +3,13 @@
  */
 package net.iubris.sscfse.battles_collector._di.providers;
 
-import java.util.List;
-
-import javax.inject.Provider;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import net.iubris.sscfse.battles_collector.Config;
+import net.iubris.sscfse.battles_collector.dao.Queries;
 import net.iubris.sscfse.battles_collector.model.Album;
 
 /**
@@ -17,29 +17,19 @@ import net.iubris.sscfse.battles_collector.model.Album;
  *
  * 20 May 2019
  */
-public class BattlesAlbumProvider implements Provider<Album> {
+@Singleton
+public class BattlesAlbumProvider extends AlbumProvider {
 
-    private EntityManager entityManager;
+	@Inject
+	public BattlesAlbumProvider(EntityManager entityManager) {
+		super(entityManager);
+	}
 
-    private BattlesAlbumProvider(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
-    private Query createQuery() {
-        Query q = entityManager.createQuery("SELECT a FROM Album a WHERE a.name = :threshold", Album.class);
+	@Override
+    protected Query createQuery() {
+        Query q = entityManager.createQuery(Queries.ALBUM_BY_NAME, Album.class);
         q.setParameter("name", Config.SSCFSE_BATTLES_ALBUM_TITLE);
         return q;
-    }
-
-    @Override
-    public Album get() {
-        @SuppressWarnings("unchecked")
-        List<Album> resultList = createQuery().getResultList();
-        if (resultList!=null && resultList.size()>0) {
-            return resultList.get(0);
-        }
-
-        return null;
     }
 
 }
